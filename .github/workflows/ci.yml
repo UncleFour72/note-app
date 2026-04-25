@@ -1,0 +1,57 @@
+name: CI - React + Docker
+
+on:
+  push:
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  react-test:
+    name: Test React App
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run lint (if exists)
+        run: npm run lint --if-present
+
+      - name: Run tests (if any)
+        run: npm test --if-present -- --watchAll=false
+
+      - name: Build React project
+        run: npm run build
+
+
+  docker-build:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs: react-test   # 👈 chỉ chạy khi react-test PASS
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker image (test build)
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: false
+          load: true
+          tags: myapp:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
