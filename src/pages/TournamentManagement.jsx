@@ -115,7 +115,7 @@ const TournamentManagement = () => {
       setIsSaving(true);
 
       // Gọi API tạo tournament qua backend
-      const response = await tournamentService.createTournament({
+      await tournamentService.createTournament({
         name: createFormData.name,
         description: createFormData.description,
         format: createFormData.format,
