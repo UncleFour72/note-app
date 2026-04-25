@@ -129,7 +129,7 @@ const TournamentManagement = () => {
       setShowCreate(false);
       // Fetch lại danh sách từ server để đồng bộ
       fetchData();
-    } catch (error) {
+    } catch {
       // Nếu BE lỗi, lưu tạm vào Redux
       toast.warning("Backend error - Temporarily saved to browser");
 
